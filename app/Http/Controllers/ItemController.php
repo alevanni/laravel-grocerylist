@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
@@ -28,12 +30,19 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreItemRequest $request) 
     {
+        // Haalt de gevalideerde gegevens op uit de StoreItemRequest class
+        $validated = $request->validated();
+    
         $item = new Item();
-        $item->name = $request->input('name');
-        $item->description = $request->input('description');
+    
+        // Stelt de 'name' en 'description' waarden in op het gevalideerde gegevens
+        $item->name = $validated['name'];
+        $item->description = $validated['description'];
+    
         $item->save();
+    
         return redirect()->route('items.index');
     }
 
@@ -48,17 +57,29 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $item = Item::find($id);
+        //dd($item);
+        return view('items.edit', compact('item'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    // De Request class wordt vervangen door de UpdateItemRequest
+    public function update(UpdateItemRequest $request, Item $item) 
     {
-        //
+         // Haalt de gevalideerde gegevens op uit de UpdateItemRequest class
+        $validated = $request->validated();
+
+        // Stelt de 'name' en 'description' waarden in op het gevalideerde gegevens
+        $item->name = $validated['name'];
+        $item->description = $validated['description'];
+
+        $item->save();
+
+        return redirect()->route('items.index');
     }
 
     /**

@@ -20,9 +20,8 @@ Route::get('/items/create', [ItemController::class, 'create'])->name('items.crea
 
 Route::post('/items', [ItemController::class, 'store'])->name('items.store');
 Route::get('/items/{item}', function () {})->name('items.show');
-Route::get('/items/{item}/edit', function () {})->name('items.edit');
-Route::put('/items/{item}', function () {})->name('items.update');
+Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
 Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
-
+Route::get('/items/{id}/edit', [ItemController::class, 'edit'])->name('items.edit');
 // We voegen ook een redirect toe aan de routes die de hoofdpagina doorverwijst naar de '/items' route
 Route::redirect('/', '/items');
