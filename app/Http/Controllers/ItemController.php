@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Category;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 
@@ -14,7 +15,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::with('category')->get();
         //dd($items);
         return view('items.index', compact('items'));
     }
@@ -24,7 +25,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        return view('items.create');
+        $categories = Category::all();
+        return view('items.create', compact('categories'));
     }
 
     /**
@@ -35,14 +37,9 @@ class ItemController extends Controller
         // Haalt de gevalideerde gegevens op uit de StoreItemRequest class
         $validated = $request->validated();
     
-        $item = new Item();
-    
-        // Stelt de 'name' en 'description' waarden in op het gevalideerde gegevens
-        $item->name = $validated['name'];
-        $item->description = $validated['description'];
-    
-        $item->save();
-    
+        // Maakt een nieuw item aan met de gevalideerde gegevens
+        Item::create($validated);
+
         return redirect()->route('items.index');
     }
 
@@ -57,11 +54,10 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Item $item)
     {
-        $item = Item::find($id);
-        //dd($item);
-        return view('items.edit', compact('item'));
+        $categories = Category::all();
+        return view('items.edit', compact('item', 'categories'));
     }
 
     /**
@@ -73,11 +69,8 @@ class ItemController extends Controller
          // Haalt de gevalideerde gegevens op uit de UpdateItemRequest class
         $validated = $request->validated();
 
-        // Stelt de 'name' en 'description' waarden in op het gevalideerde gegevens
-        $item->name = $validated['name'];
-        $item->description = $validated['description'];
-
-        $item->save();
+         // Werkt het item bij met de gevalideerde gegevens
+         $item->update($validated);
 
         return redirect()->route('items.index');
     }
